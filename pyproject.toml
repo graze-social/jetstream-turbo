@@ -1,0 +1,61 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "jetstream-turbo"
+version = "0.1.0"
+description = "Jetstream Turbocharger"
+requires-python = ">=3.11,<=3.12"
+
+license = { file = "LICENSE" }
+
+authors = [{ name = "Devin Gaffney", email = "devin@graze.social" }]
+maintainers = [{ name = "Devin Gaffney", email = "devin@graze.social" }]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "aiohttp>=3.11.11",
+    "jinja2>=3.1.5",
+    "aiohttp-jinja2>=1.6",
+    "aioboto3>=14.1.0",
+    "pydantic-settings>=2.7.1",
+    "python-json-logger>=3.2.1",
+    "redis>=5.2.1",
+    "aio-statsd>=0.2.9",
+    "httpx>=0.28.1",
+    "websockets>=13.0",
+    "atproto>=0.0.59",
+    "aiorwlock>=1.5.0",
+]
+readme = "README.md"
+
+[project.optional-dependencies]
+dev = ["flake8>=7.1.1", "pytest>=8.3.4", "black>=25.1.0"]
+test = ["coverage"]
+
+[project.urls]
+"Homepage" = "https://github.com/graze-social/jetstream-turbo"
+"Bug Reports" = "https://github.com/graze-social/jetstream-turbo/issues"
+"Source" = "https://github.com/graze-social/jetstream-turbo"
+
+[project.scripts]
+turbocharger = "social.graze.jetstream_turbo.app.__main__:main"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.build]
+includes = ["src/social", "LICENSE"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src/"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

@@ -1,0 +1,10 @@
+services:
+  jetstream_turbo:
+    build: .
+    container_name: jetstream_turbo_service
+    restart: always
+    volumes:
+      - .:/app  # Mount everything
+      - /app/.venv  # But create an empty volume for `.venv` so it's not overwritten
+    env_file:
+      - .env  # Load environment variables from .env

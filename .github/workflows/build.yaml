@@ -1,0 +1,92 @@
+name: Build Jetstream Turbo
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+    paths-ignore:
+      - deploy/**/*
+jobs:
+  build_jetstream_turbo:
+    name: build_jetstream_turbo
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      AWS_REGION: us-east-1
+      CONTAINER_REPO: 715841359524.dkr.ecr.us-east-1.amazonaws.com/graze.social/jetstream-turbo
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # TRICK TO SETUP PULUMI
+      - uses: pulumi/actions@v6
+        with:
+          stack-name: main
+
+      - name: setup_python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.11"
+
+      - name: setup_svu
+        run: curl -kL https://github.com/caarlos0/svu/releases/download/v3.2.2/svu_3.2.2_linux_amd64.tar.gz | tar zx && mv svu /usr/local/bin/svu && chmod +x /usr/local/bin/svu
+
+      - name: create_tag
+        id: create_tag
+        run: |
+          echo "VERSION_TAG=$(svu next)" >> $GITHUB_ENV
+          echo "VERSION_TAG=$(svu next)" >> $GITHUB_OUTPUT
+
+      - name: configure_aws_credentials
+        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          role-to-assume: arn:aws:iam::715841359524:role/gh-action-ecr
+          role-external-id: grazebuilder
+          role-duration-seconds: 1200
+          role-session-name: jetstream-builder
+          # This is required for
+          role-skip-session-tagging: true
+          aws-region: us-east-1
+
+      - name: login_to_ecr
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: "true"
+
+      - name: build_and_push
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile
+          context: .
+          push: true
+          tags: |
+            ${{env.CONTAINER_REPO}}:${{ env.VERSION_TAG }}
+            ${{env.CONTAINER_REPO}}:latest
+          builder: ${{ steps.setup_buildx.name }}
+          platforms: linux/amd64
+
+      - name: create_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |-
+          gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} -n "Release version image available: ${{ env.CONTAINER_REPO }}:${{ env.VERSION_TAG }}"
+
+      - name: discord_notify_hook
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DEV_CHANNEL_DISCORD_WEBHOOK }}
+          title: "Jetstream Turbo ${{ env.VERSION_TAG }} Created"
+          message: "**${{ github.event.pull_request.title }}**\n**Creator:** ${{ github.event.pull_request.user.login }}\n${{ github.event.pull_request.html_url }}"
+          include_image: true
+          custom_image_url: https://avatars.githubusercontent.com/u/196731666?s=400&v=4
+          avatar_url: https://avatars.githubusercontent.com/u/196731666?s=48&v=4
+          username: Graze Deploy Bot
+          colour: "#0090ff"
