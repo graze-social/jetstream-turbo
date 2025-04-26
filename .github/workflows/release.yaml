@@ -40,7 +40,7 @@ jobs:
         with:
           repository: graze-social/turbo-deploy
           event-type: jetstream-release
-          pat-token: ${{ secrets.DISPATCH_GH_TOKEN }}
+          token: ${{ secrets.DISPATCH_GH_TOKEN }}
           client-payload: |-
             {
               "ref": "${{ github.ref }}",
