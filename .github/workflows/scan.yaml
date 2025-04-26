@@ -1,7 +1,11 @@
 name: Scanner
 on:
-  push:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
 jobs:
   scanner:
     name: Scan Repo
