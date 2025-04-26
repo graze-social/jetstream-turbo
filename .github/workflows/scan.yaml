@@ -1,8 +1,6 @@
 name: Scanner
 on:
   push:
-    branches:
-      - main
   pull_request:
 jobs:
   scanner:
@@ -18,7 +16,5 @@ jobs:
           scan-type: "fs"
           ignore-unfixed: true
           format: "table"
-          # format: "sarif"
-          # output: "trivy-results.sarif"
           severity: "CRITICAL,HIGH,MEDIUM"
           github-pat: ${{ github.token }}
