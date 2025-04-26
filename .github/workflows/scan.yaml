@@ -15,6 +15,13 @@ jobs:
         with:
           scan-type: "fs"
           ignore-unfixed: true
-          format: "table"
+          format: "template"
+          template: "@trivy/github-markdown.tpl"
+          output: trivyscan.md
           severity: "CRITICAL,HIGH,MEDIUM"
           github-pat: ${{ github.token }}
+
+      - name: PR comment with file
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          file-path: trivyscan.md
