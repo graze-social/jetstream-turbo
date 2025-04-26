@@ -35,7 +35,7 @@ jobs:
         run: |-
           gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} -n "Release version image available: ${{ env.CONTAINER_REPO }}:${{ env.VERSION_TAG }}"
 
-      - name: Repository Dispatch
+      - name: repo_dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
           repository: graze-social/turbo-deploy
