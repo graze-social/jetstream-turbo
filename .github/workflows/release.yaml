@@ -45,6 +45,6 @@ jobs:
             {
               "ref": "${{ github.ref }}",
               "sha": "${{ github.sha }}",
-              "version_tag": "${{env.VERSION_TAG}}"
+              "version_tag": "${{env.VERSION_TAG}}",
               "pr_context": ${{toJson(github.event.pull_request)}}
             }
