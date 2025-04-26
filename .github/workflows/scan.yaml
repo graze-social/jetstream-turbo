@@ -16,7 +16,7 @@ jobs:
           scan-type: "fs"
           ignore-unfixed: true
           format: "template"
-          template: "@trivy/github-markdown.tpl"
+          template: "@/github/workspace/jetstream-turbo/.github/trivy-html.tpl"
           output: trivyscan.md
           severity: "CRITICAL,HIGH,MEDIUM"
           github-pat: ${{ github.token }}
