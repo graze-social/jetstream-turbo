@@ -33,7 +33,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |-
-          gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} -n "Release version image available: ${{ env.CONTAINER_REPO }}:${{ env.VERSION_TAG }}"
+          gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} --generate-notes
 
       - name: repo_dispatch
         uses: peter-evans/repository-dispatch@v3
