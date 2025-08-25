@@ -1,12 +1,10 @@
 import asyncio
-import random
 from typing import List, Dict, TypeVar, Callable, Awaitable
 
 from atproto import AsyncClient, models
 from atproto_client.exceptions import (
     BadRequestError,
     RequestException,
-    InvokeTimeoutError,
 )
 
 T = TypeVar("T")
@@ -46,14 +44,6 @@ class BlueskyAPI:
                 except:
                     bads.append(ss)
         return apis
-
-    async def _login_client(self, client: AsyncClient, session_string: str):
-        """Logs a given AsyncClient in with a particular session string."""
-        try:
-            await client.login(session_string=session_string)
-            await client.user_timeline()
-        except (BadRequestError, RequestException, ValueError) as e:
-            raise RuntimeError(f"Failed to login with session string: {e}")
 
     async def _chunked_map(
         self,

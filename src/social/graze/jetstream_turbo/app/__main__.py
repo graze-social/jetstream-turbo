@@ -1,27 +1,37 @@
-import os
-from aiohttp import web
-import logging
 from logging.config import dictConfig
 import argparse
+import asyncio
 import json
+import logging
+import os
+
+from social.graze.jetstream_turbo.app.turbocharger import start_turbo_charger
 
 
 def configure_logging():
+    """
+    Configures logging.
+    """
     logging_config_file = os.getenv("LOGGING_CONFIG_FILE", "")
 
     if len(logging_config_file) > 0:
-        with open(logging_config_file) as fl:
+        with open(logging_config_file, encoding="utf-8") as fl:
             dictConfig(json.load(fl))
         return
 
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-def main():
+async def start():
+    """
+    Parse arguments and start turbocharger.
+    """
+
     configure_logging()
-
-    from social.graze.jetstream_turbo.app.turbocharger import start_turbo_charger
 
     parser = argparse.ArgumentParser(prog="turbocharger")
     parser.add_argument(
@@ -37,14 +47,18 @@ def main():
         help="Shard to test against",
     )
     args = parser.parse_args()
-    web.run_app(
-        start_turbo_charger(
-            None,
-            modulo=args.modulo,
-            shard=args.shard,
-        )
+
+    await start_turbo_charger(
+        None,
+        modulo=args.modulo,
+        shard=args.shard,
     )
 
+def main():
+    """
+    The entrypoint for the program, called if this module is invoked and also in `pyproject.toml`.
+    """
+    asyncio.run(start())
 
 if __name__ == "__main__":
     main()

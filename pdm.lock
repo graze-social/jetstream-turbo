@@ -5,71 +5,60 @@
 groups = ["default", "dev", "test"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:f572c4c0934e67660f526a9e353f10243331a006345d2765b140d564044905c9"
+content_hash = "sha256:b4d82a047e6b3d76beb1d427cb01b555d46484d8fce532a8681eab1d09d453b0"
 
 [[metadata.targets]]
 requires_python = ">=3.11,<=3.12"
 
 [[package]]
-name = "aio-statsd"
-version = "0.2.9"
-requires_python = "<4.0,>=3.6"
-summary = "an asyncio-based client for send metric to StatsD, Graphite.carbon, TelegrafStatsD and DogStatsD."
-groups = ["default"]
-files = [
-    {file = "aio_statsd-0.2.9-py3-none-any.whl", hash = "sha256:d3358fe957ea1b219b55aecd90317b84672c22d2a54590ae4b94d2a41400fb02"},
-    {file = "aio_statsd-0.2.9.tar.gz", hash = "sha256:349ea88dcda30a445e4174528b98074a3061ba057543a5ac0212a3aca6d63cc4"},
-]
-
-[[package]]
 name = "aioboto3"
-version = "14.1.0"
-requires_python = "<4.0,>=3.8"
+version = "15.1.0"
+requires_python = ">=3.9"
 summary = "Async boto3 wrapper"
 groups = ["default"]
 dependencies = [
-    "aiobotocore[boto3]==2.21.1",
+    "aiobotocore[boto3]==2.24.0",
     "aiofiles>=23.2.1",
 ]
 files = [
-    {file = "aioboto3-14.1.0-py3-none-any.whl", hash = "sha256:f8547032bc4f90966b22869c1295d890c161549f4e8919f32853571ceb6fd0c6"},
-    {file = "aioboto3-14.1.0.tar.gz", hash = "sha256:9d59b536ae8a951b9413ce151bf77df9c7cfe2cbaa2c4c240c066f384305c932"},
+    {file = "aioboto3-15.1.0-py3-none-any.whl", hash = "sha256:66006142a2ccc7d6d07aa260ba291c4922b6767d270ba42f95c59e85d8b3e645"},
+    {file = "aioboto3-15.1.0.tar.gz", hash = "sha256:37763bbc6321ceb479106dc63bc84c8fdb59dd02540034a12941aebef2057c5c"},
 ]
 
 [[package]]
 name = "aiobotocore"
-version = "2.21.1"
-requires_python = ">=3.8"
+version = "2.24.0"
+requires_python = ">=3.9"
 summary = "Async client for aws services using botocore and aiohttp"
 groups = ["default"]
 dependencies = [
     "aiohttp<4.0.0,>=3.9.2",
     "aioitertools<1.0.0,>=0.5.1",
-    "botocore<1.37.2,>=1.37.0",
+    "botocore<1.39.12,>=1.39.9",
     "jmespath<2.0.0,>=0.7.1",
     "multidict<7.0.0,>=6.0.0",
     "python-dateutil<3.0.0,>=2.1",
     "wrapt<2.0.0,>=1.10.10",
 ]
 files = [
-    {file = "aiobotocore-2.21.1-py3-none-any.whl", hash = "sha256:bd7c49a6d6f8a3d9444b0a94417c8da13813b5c7eec1c4f0ec2db7e8ce8f23e7"},
-    {file = "aiobotocore-2.21.1.tar.gz", hash = "sha256:010357f43004413e92a9d066bb0db1f241aeb29ffed306e9197061ffc94e6577"},
+    {file = "aiobotocore-2.24.0-py3-none-any.whl", hash = "sha256:72bb1f8eb1b962779a95e1bcc9cf35bc33196ad763b622a40ae7fa9d2e95c87c"},
+    {file = "aiobotocore-2.24.0.tar.gz", hash = "sha256:b32c0c45d38c22a18ce395a0b5448606c5260603296a152895b5bdb40ab3139d"},
 ]
 
 [[package]]
 name = "aiobotocore"
-version = "2.21.1"
+version = "2.24.0"
 extras = ["boto3"]
-requires_python = ">=3.8"
+requires_python = ">=3.9"
 summary = "Async client for aws services using botocore and aiohttp"
 groups = ["default"]
 dependencies = [
-    "aiobotocore==2.21.1",
-    "boto3<1.37.2,>=1.37.0",
+    "aiobotocore==2.24.0",
+    "boto3<1.39.12,>=1.39.9",
 ]
 files = [
-    {file = "aiobotocore-2.21.1-py3-none-any.whl", hash = "sha256:bd7c49a6d6f8a3d9444b0a94417c8da13813b5c7eec1c4f0ec2db7e8ce8f23e7"},
-    {file = "aiobotocore-2.21.1.tar.gz", hash = "sha256:010357f43004413e92a9d066bb0db1f241aeb29ffed306e9197061ffc94e6577"},
+    {file = "aiobotocore-2.24.0-py3-none-any.whl", hash = "sha256:72bb1f8eb1b962779a95e1bcc9cf35bc33196ad763b622a40ae7fa9d2e95c87c"},
+    {file = "aiobotocore-2.24.0.tar.gz", hash = "sha256:b32c0c45d38c22a18ce395a0b5448606c5260603296a152895b5bdb40ab3139d"},
 ]
 
 [[package]]
@@ -96,13 +85,13 @@ files = [
 
 [[package]]
 name = "aiohttp"
-version = "3.11.18"
+version = "3.12.15"
 requires_python = ">=3.9"
 summary = "Async http client/server framework (asyncio)"
 groups = ["default"]
 dependencies = [
-    "aiohappyeyeballs>=2.3.0",
-    "aiosignal>=1.1.2",
+    "aiohappyeyeballs>=2.5.0",
+    "aiosignal>=1.4.0",
     "async-timeout<6.0,>=4.0; python_version < \"3.11\"",
     "attrs>=17.3.0",
     "frozenlist>=1.1.1",
@@ -111,54 +100,41 @@ dependencies = [
     "yarl<2.0,>=1.17.0",
 ]
 files = [
-    {file = "aiohttp-3.11.18-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:427fdc56ccb6901ff8088544bde47084845ea81591deb16f957897f0f0ba1be9"},
-    {file = "aiohttp-3.11.18-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:2c828b6d23b984255b85b9b04a5b963a74278b7356a7de84fda5e3b76866597b"},
-    {file = "aiohttp-3.11.18-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:5c2eaa145bb36b33af1ff2860820ba0589e165be4ab63a49aebfd0981c173b66"},
-    {file = "aiohttp-3.11.18-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3d518ce32179f7e2096bf4e3e8438cf445f05fedd597f252de9f54c728574756"},
-    {file = "aiohttp-3.11.18-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:0700055a6e05c2f4711011a44364020d7a10fbbcd02fbf3e30e8f7e7fddc8717"},
-    {file = "aiohttp-3.11.18-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:8bd1cde83e4684324e6ee19adfc25fd649d04078179890be7b29f76b501de8e4"},
-    {file = "aiohttp-3.11.18-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:73b8870fe1c9a201b8c0d12c94fe781b918664766728783241a79e0468427e4f"},
-    {file = "aiohttp-3.11.18-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:25557982dd36b9e32c0a3357f30804e80790ec2c4d20ac6bcc598533e04c6361"},
-    {file = "aiohttp-3.11.18-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:7e889c9df381a2433802991288a61e5a19ceb4f61bd14f5c9fa165655dcb1fd1"},
-    {file = "aiohttp-3.11.18-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:9ea345fda05bae217b6cce2acf3682ce3b13d0d16dd47d0de7080e5e21362421"},
-    {file = "aiohttp-3.11.18-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:9f26545b9940c4b46f0a9388fd04ee3ad7064c4017b5a334dd450f616396590e"},
-    {file = "aiohttp-3.11.18-cp311-cp311-musllinux_1_2_ppc64le.whl", hash = "sha256:3a621d85e85dccabd700294494d7179ed1590b6d07a35709bb9bd608c7f5dd1d"},
-    {file = "aiohttp-3.11.18-cp311-cp311-musllinux_1_2_s390x.whl", hash = "sha256:9c23fd8d08eb9c2af3faeedc8c56e134acdaf36e2117ee059d7defa655130e5f"},
-    {file = "aiohttp-3.11.18-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:d9e6b0e519067caa4fd7fb72e3e8002d16a68e84e62e7291092a5433763dc0dd"},
-    {file = "aiohttp-3.11.18-cp311-cp311-win32.whl", hash = "sha256:122f3e739f6607e5e4c6a2f8562a6f476192a682a52bda8b4c6d4254e1138f4d"},
-    {file = "aiohttp-3.11.18-cp311-cp311-win_amd64.whl", hash = "sha256:e6f3c0a3a1e73e88af384b2e8a0b9f4fb73245afd47589df2afcab6b638fa0e6"},
-    {file = "aiohttp-3.11.18-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:63d71eceb9cad35d47d71f78edac41fcd01ff10cacaa64e473d1aec13fa02df2"},
-    {file = "aiohttp-3.11.18-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:d1929da615840969929e8878d7951b31afe0bac883d84418f92e5755d7b49508"},
-    {file = "aiohttp-3.11.18-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7d0aebeb2392f19b184e3fdd9e651b0e39cd0f195cdb93328bd124a1d455cd0e"},
-    {file = "aiohttp-3.11.18-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3849ead845e8444f7331c284132ab314b4dac43bfae1e3cf350906d4fff4620f"},
-    {file = "aiohttp-3.11.18-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:5e8452ad6b2863709f8b3d615955aa0807bc093c34b8e25b3b52097fe421cb7f"},
-    {file = "aiohttp-3.11.18-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3b8d2b42073611c860a37f718b3d61ae8b4c2b124b2e776e2c10619d920350ec"},
-    {file = "aiohttp-3.11.18-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:40fbf91f6a0ac317c0a07eb328a1384941872f6761f2e6f7208b63c4cc0a7ff6"},
-    {file = "aiohttp-3.11.18-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:44ff5625413fec55216da5eaa011cf6b0a2ed67a565914a212a51aa3755b0009"},
-    {file = "aiohttp-3.11.18-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:7f33a92a2fde08e8c6b0c61815521324fc1612f397abf96eed86b8e31618fdb4"},
-    {file = "aiohttp-3.11.18-cp312-cp312-musllinux_1_2_armv7l.whl", hash = "sha256:11d5391946605f445ddafda5eab11caf310f90cdda1fd99865564e3164f5cff9"},
-    {file = "aiohttp-3.11.18-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:3cc314245deb311364884e44242e00c18b5896e4fe6d5f942e7ad7e4cb640adb"},
-    {file = "aiohttp-3.11.18-cp312-cp312-musllinux_1_2_ppc64le.whl", hash = "sha256:0f421843b0f70740772228b9e8093289924359d306530bcd3926f39acbe1adda"},
-    {file = "aiohttp-3.11.18-cp312-cp312-musllinux_1_2_s390x.whl", hash = "sha256:e220e7562467dc8d589e31c1acd13438d82c03d7f385c9cd41a3f6d1d15807c1"},
-    {file = "aiohttp-3.11.18-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:ab2ef72f8605046115bc9aa8e9d14fd49086d405855f40b79ed9e5c1f9f4faea"},
-    {file = "aiohttp-3.11.18-cp312-cp312-win32.whl", hash = "sha256:12a62691eb5aac58d65200c7ae94d73e8a65c331c3a86a2e9670927e94339ee8"},
-    {file = "aiohttp-3.11.18-cp312-cp312-win_amd64.whl", hash = "sha256:364329f319c499128fd5cd2d1c31c44f234c58f9b96cc57f743d16ec4f3238c8"},
-    {file = "aiohttp-3.11.18.tar.gz", hash = "sha256:ae856e1138612b7e412db63b7708735cff4d38d0399f6a5435d3dac2669f558a"},
-]
-
-[[package]]
-name = "aiohttp-jinja2"
-version = "1.6"
-requires_python = ">=3.8"
-summary = "jinja2 template renderer for aiohttp.web (http server for asyncio)"
-groups = ["default"]
-dependencies = [
-    "aiohttp>=3.9.0",
-    "jinja2>=3.0.0",
-]
-files = [
-    {file = "aiohttp-jinja2-1.6.tar.gz", hash = "sha256:a3a7ff5264e5bca52e8ae547bbfd0761b72495230d438d05b6c0915be619b0e2"},
-    {file = "aiohttp_jinja2-1.6-py3-none-any.whl", hash = "sha256:0df405ee6ad1b58e5a068a105407dc7dcc1704544c559f1938babde954f945c7"},
+    {file = "aiohttp-3.12.15-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:d3ce17ce0220383a0f9ea07175eeaa6aa13ae5a41f30bc61d84df17f0e9b1117"},
+    {file = "aiohttp-3.12.15-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:010cc9bbd06db80fe234d9003f67e97a10fe003bfbedb40da7d71c1008eda0fe"},
+    {file = "aiohttp-3.12.15-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:3f9d7c55b41ed687b9d7165b17672340187f87a773c98236c987f08c858145a9"},
+    {file = "aiohttp-3.12.15-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bc4fbc61bb3548d3b482f9ac7ddd0f18c67e4225aaa4e8552b9f1ac7e6bda9e5"},
+    {file = "aiohttp-3.12.15-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:7fbc8a7c410bb3ad5d595bb7118147dfbb6449d862cc1125cf8867cb337e8728"},
+    {file = "aiohttp-3.12.15-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:74dad41b3458dbb0511e760fb355bb0b6689e0630de8a22b1b62a98777136e16"},
+    {file = "aiohttp-3.12.15-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3b6f0af863cf17e6222b1735a756d664159e58855da99cfe965134a3ff63b0b0"},
+    {file = "aiohttp-3.12.15-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b5b7fe4972d48a4da367043b8e023fb70a04d1490aa7d68800e465d1b97e493b"},
+    {file = "aiohttp-3.12.15-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6443cca89553b7a5485331bc9bedb2342b08d073fa10b8c7d1c60579c4a7b9bd"},
+    {file = "aiohttp-3.12.15-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:6c5f40ec615e5264f44b4282ee27628cea221fcad52f27405b80abb346d9f3f8"},
+    {file = "aiohttp-3.12.15-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:2abbb216a1d3a2fe86dbd2edce20cdc5e9ad0be6378455b05ec7f77361b3ab50"},
+    {file = "aiohttp-3.12.15-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:db71ce547012a5420a39c1b744d485cfb823564d01d5d20805977f5ea1345676"},
+    {file = "aiohttp-3.12.15-cp311-cp311-musllinux_1_2_ppc64le.whl", hash = "sha256:ced339d7c9b5030abad5854aa5413a77565e5b6e6248ff927d3e174baf3badf7"},
+    {file = "aiohttp-3.12.15-cp311-cp311-musllinux_1_2_s390x.whl", hash = "sha256:7c7dd29c7b5bda137464dc9bfc738d7ceea46ff70309859ffde8c022e9b08ba7"},
+    {file = "aiohttp-3.12.15-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:421da6fd326460517873274875c6c5a18ff225b40da2616083c5a34a7570b685"},
+    {file = "aiohttp-3.12.15-cp311-cp311-win32.whl", hash = "sha256:4420cf9d179ec8dfe4be10e7d0fe47d6d606485512ea2265b0d8c5113372771b"},
+    {file = "aiohttp-3.12.15-cp311-cp311-win_amd64.whl", hash = "sha256:edd533a07da85baa4b423ee8839e3e91681c7bfa19b04260a469ee94b778bf6d"},
+    {file = "aiohttp-3.12.15-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:802d3868f5776e28f7bf69d349c26fc0efadb81676d0afa88ed00d98a26340b7"},
+    {file = "aiohttp-3.12.15-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:f2800614cd560287be05e33a679638e586a2d7401f4ddf99e304d98878c29444"},
+    {file = "aiohttp-3.12.15-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8466151554b593909d30a0a125d638b4e5f3836e5aecde85b66b80ded1cb5b0d"},
+    {file = "aiohttp-3.12.15-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2e5a495cb1be69dae4b08f35a6c4579c539e9b5706f606632102c0f855bcba7c"},
+    {file = "aiohttp-3.12.15-cp312-cp312-manylinux_2_17_armv7l.manylinux2014_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:6404dfc8cdde35c69aaa489bb3542fb86ef215fc70277c892be8af540e5e21c0"},
+    {file = "aiohttp-3.12.15-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3ead1c00f8521a5c9070fcb88f02967b1d8a0544e6d85c253f6968b785e1a2ab"},
+    {file = "aiohttp-3.12.15-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:6990ef617f14450bc6b34941dba4f12d5613cbf4e33805932f853fbd1cf18bfb"},
+    {file = "aiohttp-3.12.15-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fd736ed420f4db2b8148b52b46b88ed038d0354255f9a73196b7bbce3ea97545"},
+    {file = "aiohttp-3.12.15-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3c5092ce14361a73086b90c6efb3948ffa5be2f5b6fbcf52e8d8c8b8848bb97c"},
+    {file = "aiohttp-3.12.15-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:aaa2234bb60c4dbf82893e934d8ee8dea30446f0647e024074237a56a08c01bd"},
+    {file = "aiohttp-3.12.15-cp312-cp312-musllinux_1_2_armv7l.whl", hash = "sha256:6d86a2fbdd14192e2f234a92d3b494dd4457e683ba07e5905a0b3ee25389ac9f"},
+    {file = "aiohttp-3.12.15-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:a041e7e2612041a6ddf1c6a33b883be6a421247c7afd47e885969ee4cc58bd8d"},
+    {file = "aiohttp-3.12.15-cp312-cp312-musllinux_1_2_ppc64le.whl", hash = "sha256:5015082477abeafad7203757ae44299a610e89ee82a1503e3d4184e6bafdd519"},
+    {file = "aiohttp-3.12.15-cp312-cp312-musllinux_1_2_s390x.whl", hash = "sha256:56822ff5ddfd1b745534e658faba944012346184fbfe732e0d6134b744516eea"},
+    {file = "aiohttp-3.12.15-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:b2acbbfff69019d9014508c4ba0401822e8bae5a5fdc3b6814285b71231b60f3"},
+    {file = "aiohttp-3.12.15-cp312-cp312-win32.whl", hash = "sha256:d849b0901b50f2185874b9a232f38e26b9b3d4810095a7572eacea939132d4e1"},
+    {file = "aiohttp-3.12.15-cp312-cp312-win_amd64.whl", hash = "sha256:b390ef5f62bb508a9d67cb3bba9b8356e23b3996da7062f1a57ce1a79d2b3d34"},
+    {file = "aiohttp-3.12.15.tar.gz", hash = "sha256:4fc61385e9c98d72fcdf47e6dd81833f47b2f77c114c29cd64a361be57a763a2"},
 ]
 
 [[package]]
@@ -188,16 +164,17 @@ files = [
 
 [[package]]
 name = "aiosignal"
-version = "1.3.2"
+version = "1.4.0"
 requires_python = ">=3.9"
 summary = "aiosignal: a list of registered asynchronous callbacks"
 groups = ["default"]
 dependencies = [
     "frozenlist>=1.1.0",
+    "typing-extensions>=4.2; python_version < \"3.13\"",
 ]
 files = [
-    {file = "aiosignal-1.3.2-py2.py3-none-any.whl", hash = "sha256:45cde58e409a301715980c2b01d0c28bdde3770d8290b5eb2173759d9acb31a5"},
-    {file = "aiosignal-1.3.2.tar.gz", hash = "sha256:a8c255c66fafb1e499c9351d0bf32ff2d8a0321595ebac3b93713656d2436f54"},
+    {file = "aiosignal-1.4.0-py3-none-any.whl", hash = "sha256:053243f8b92b990551949e63930a839ff0cf0b0ebbe0597b0f3fb19e1a0fe82e"},
+    {file = "aiosignal-1.4.0.tar.gz", hash = "sha256:f47eecd9468083c2029cc99945502cb7708b082c232f9aca65da147157b251c7"},
 ]
 
 [[package]]
@@ -305,24 +282,24 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.37.1"
-requires_python = ">=3.8"
+version = "1.39.11"
+requires_python = ">=3.9"
 summary = "The AWS SDK for Python"
 groups = ["default"]
 dependencies = [
-    "botocore<1.38.0,>=1.37.1",
+    "botocore<1.40.0,>=1.39.11",
     "jmespath<2.0.0,>=0.7.1",
-    "s3transfer<0.12.0,>=0.11.0",
+    "s3transfer<0.14.0,>=0.13.0",
 ]
 files = [
-    {file = "boto3-1.37.1-py3-none-any.whl", hash = "sha256:4320441f904435a1b85e6ecb81793192e522c737cc9ed6566014e29f0a11cb22"},
-    {file = "boto3-1.37.1.tar.gz", hash = "sha256:96d18f7feb0c1fcb95f8837b74b6c8880e1b4e35ce5f8a8f8cb243a090c278ed"},
+    {file = "boto3-1.39.11-py3-none-any.whl", hash = "sha256:af8f1dad35eceff7658fab43b39b0f55892b6e3dd12308733521cc24dd2c9a02"},
+    {file = "boto3-1.39.11.tar.gz", hash = "sha256:3027edf20642fe1d5f9dc50a420d0fe2733073ed6a9f0f047b60fe08c3682132"},
 ]
 
 [[package]]
 name = "botocore"
-version = "1.37.1"
-requires_python = ">=3.8"
+version = "1.39.11"
+requires_python = ">=3.9"
 summary = "Low-level, data-driven core of boto 3."
 groups = ["default"]
 dependencies = [
@@ -332,8 +309,22 @@ dependencies = [
     "urllib3<1.27,>=1.25.4; python_version < \"3.10\"",
 ]
 files = [
-    {file = "botocore-1.37.1-py3-none-any.whl", hash = "sha256:c1db1bfc5d8c6b3b6d1ca6794f605294b4264e82a7e727b88e0fef9c2b9fbb9c"},
-    {file = "botocore-1.37.1.tar.gz", hash = "sha256:b194db8fb2a0ffba53568c364ae26166e7eec0445496b2ac86a6e142f3dd982f"},
+    {file = "botocore-1.39.11-py3-none-any.whl", hash = "sha256:1545352931a8a186f3e977b1e1a4542d7d434796e274c3c62efd0210b5ea76dc"},
+    {file = "botocore-1.39.11.tar.gz", hash = "sha256:953b12909d6799350e346ab038e55b6efe622c616f80aef74d7a6683ffdd972c"},
+]
+
+[[package]]
+name = "botocore-stubs"
+version = "1.38.46"
+requires_python = ">=3.9"
+summary = "Type annotations and code completion for botocore"
+groups = ["default"]
+dependencies = [
+    "types-awscrt",
+]
+files = [
+    {file = "botocore_stubs-1.38.46-py3-none-any.whl", hash = "sha256:cc21d9a7dd994bdd90872db4664d817c4719b51cda8004fd507a4bf65b085a75"},
+    {file = "botocore_stubs-1.38.46.tar.gz", hash = "sha256:a04e69766ab8bae338911c1897492f88d05cd489cd75f06e6eb4f135f9da8c7b"},
 ]
 
 [[package]]
@@ -625,20 +616,6 @@ files = [
 ]
 
 [[package]]
-name = "jinja2"
-version = "3.1.6"
-requires_python = ">=3.7"
-summary = "A very fast and expressive template engine."
-groups = ["default"]
-dependencies = [
-    "MarkupSafe>=2.0",
-]
-files = [
-    {file = "jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"},
-    {file = "jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d"},
-]
-
-[[package]]
 name = "jmespath"
 version = "1.0.1"
 requires_python = ">=3.7"
@@ -683,36 +660,6 @@ files = [
     {file = "libipld-3.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:4557f20d4b8e61ac6c89ab4cea04f3a518a266f3c3d7348cf4cc8ac9b02c89dc"},
     {file = "libipld-3.0.1-cp312-cp312-win_arm64.whl", hash = "sha256:92ec97dac2e978f09343ebb64b0bb9bed9c294e8a224490552cfc200e9101f5c"},
     {file = "libipld-3.0.1.tar.gz", hash = "sha256:2970752de70e5fdcac4646900cdefaa0dca08db9b5d59c40b5496d99e3bffa64"},
-]
-
-[[package]]
-name = "markupsafe"
-version = "3.0.2"
-requires_python = ">=3.9"
-summary = "Safely add untrusted strings to HTML/XML markup."
-groups = ["default"]
-files = [
-    {file = "MarkupSafe-3.0.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:9025b4018f3a1314059769c7bf15441064b2207cb3f065e6ea1e7359cb46db9d"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:93335ca3812df2f366e80509ae119189886b0f3c2b81325d39efdb84a1e2ae93"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2cb8438c3cbb25e220c2ab33bb226559e7afb3baec11c4f218ffa7308603c832"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a123e330ef0853c6e822384873bef7507557d8e4a082961e1defa947aa59ba84"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1e084f686b92e5b83186b07e8a17fc09e38fff551f3602b249881fec658d3eca"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:d8213e09c917a951de9d09ecee036d5c7d36cb6cb7dbaece4c71a60d79fb9798"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:5b02fb34468b6aaa40dfc198d813a641e3a63b98c2b05a16b9f80b7ec314185e"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:0bff5e0ae4ef2e1ae4fdf2dfd5b76c75e5c2fa4132d05fc1b0dabcd20c7e28c4"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-win32.whl", hash = "sha256:6c89876f41da747c8d3677a2b540fb32ef5715f97b66eeb0c6b66f5e3ef6f59d"},
-    {file = "MarkupSafe-3.0.2-cp311-cp311-win_amd64.whl", hash = "sha256:70a87b411535ccad5ef2f1df5136506a10775d267e197e4cf531ced10537bd6b"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:9778bd8ab0a994ebf6f84c2b949e65736d5575320a17ae8984a77fab08db94cf"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:846ade7b71e3536c4e56b386c2a47adf5741d2d8b94ec9dc3e92e5e1ee1e2225"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1c99d261bd2d5f6b59325c92c73df481e05e57f19837bdca8413b9eac4bd8028"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e17c96c14e19278594aa4841ec148115f9c7615a47382ecb6b82bd8fea3ab0c8"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:88416bd1e65dcea10bc7569faacb2c20ce071dd1f87539ca2ab364bf6231393c"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:2181e67807fc2fa785d0592dc2d6206c019b9502410671cc905d132a92866557"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:52305740fe773d09cffb16f8ed0427942901f00adedac82ec8b67752f58a1b22"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:ad10d3ded218f1039f11a75f8091880239651b52e9bb592ca27de44eed242a48"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-win32.whl", hash = "sha256:0f4ca02bea9a23221c0182836703cbf8930c5e9454bacce27e767509fa286a30"},
-    {file = "MarkupSafe-3.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:8e06879fc22a25ca47312fbe7c8264eb0b662f6db27cb2d3bbbc74b1df4b9b87"},
-    {file = "markupsafe-3.0.2.tar.gz", hash = "sha256:ee55d3edf80167e48ea11a923c7386f4669df67d7994554387f84e7d8b0a2bf0"},
 ]
 
 [[package]]
@@ -1063,16 +1010,16 @@ files = [
 
 [[package]]
 name = "s3transfer"
-version = "0.11.3"
-requires_python = ">=3.8"
+version = "0.13.1"
+requires_python = ">=3.9"
 summary = "An Amazon S3 Transfer Manager"
 groups = ["default"]
 dependencies = [
-    "botocore<2.0a.0,>=1.36.0",
+    "botocore<2.0a.0,>=1.37.4",
 ]
 files = [
-    {file = "s3transfer-0.11.3-py3-none-any.whl", hash = "sha256:ca855bdeb885174b5ffa95b9913622459d4ad8e331fc98eb01e6d5eb6a30655d"},
-    {file = "s3transfer-0.11.3.tar.gz", hash = "sha256:edae4977e3a122445660c7c114bba949f9d191bae3b34a096f18a1c8c354527a"},
+    {file = "s3transfer-0.13.1-py3-none-any.whl", hash = "sha256:a981aa7429be23fe6dfc13e80e4020057cbab622b08c0315288758d67cabc724"},
+    {file = "s3transfer-0.13.1.tar.gz", hash = "sha256:c3fdba22ba1bd367922f27ec8032d6a1cf5f10c934fb5d68cf60fd5a23d936cf"},
 ]
 
 [[package]]
@@ -1095,6 +1042,211 @@ groups = ["default"]
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
+]
+
+[[package]]
+name = "sqsi"
+version = "0.1.9"
+requires_python = ">3.10.0"
+summary = "Async Iterators for SQS Queues"
+groups = ["default"]
+dependencies = [
+    "aiobotocore>=2.23.1",
+    "types-aiobotocore[sqs]>=2.23.1",
+]
+files = [
+    {file = "sqsi-0.1.9-py3-none-any.whl", hash = "sha256:88b783dffa8bd7daab6fbeef504b7eb141656af443145d272d8452147e890567"},
+    {file = "sqsi-0.1.9.tar.gz", hash = "sha256:3015afac496b9480c1f522722bda223706d39236b5a299853d2ff3c621031e5c"},
+]
+
+[[package]]
+name = "types-aioboto3"
+version = "15.1.0"
+requires_python = ">=3.8"
+summary = "Type annotations for aioboto3 15.1.0 generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "botocore-stubs",
+    "types-aiobotocore",
+    "types-s3transfer",
+    "typing-extensions>=4.1.0; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aioboto3-15.1.0-py3-none-any.whl", hash = "sha256:5b897de267eb1766f02d1cd089e21ca88eeff18bd04000cba8713ea3468a3db5"},
+    {file = "types_aioboto3-15.1.0.tar.gz", hash = "sha256:2f1bdfaf25ec015a50c0ce703b4298de1f2c9655f52b4a345334dd4f6ba14196"},
+]
+
+[[package]]
+name = "types-aioboto3"
+version = "15.1.0"
+extras = ["essential"]
+requires_python = ">=3.8"
+summary = "Type annotations for aioboto3 15.1.0 generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "types-aioboto3==15.1.0",
+    "types-aiobotocore-cloudformation<2.25.0,>=2.24.0",
+    "types-aiobotocore-dynamodb<2.25.0,>=2.24.0",
+    "types-aiobotocore-ec2<2.25.0,>=2.24.0",
+    "types-aiobotocore-lambda<2.25.0,>=2.24.0",
+    "types-aiobotocore-rds<2.25.0,>=2.24.0",
+    "types-aiobotocore-s3<2.25.0,>=2.24.0",
+    "types-aiobotocore-sqs<2.25.0,>=2.24.0",
+]
+files = [
+    {file = "types_aioboto3-15.1.0-py3-none-any.whl", hash = "sha256:5b897de267eb1766f02d1cd089e21ca88eeff18bd04000cba8713ea3468a3db5"},
+    {file = "types_aioboto3-15.1.0.tar.gz", hash = "sha256:2f1bdfaf25ec015a50c0ce703b4298de1f2c9655f52b4a345334dd4f6ba14196"},
+]
+
+[[package]]
+name = "types-aiobotocore"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore 2.24.1 generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "botocore-stubs",
+    "typing-extensions>=4.1.0; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore-2.24.1-py3-none-any.whl", hash = "sha256:3c766918cae7e7e908352930f4ecc4de00130a5b84ba16d305d2b9be942d304e"},
+    {file = "types_aiobotocore-2.24.1.tar.gz", hash = "sha256:82ad58aa05bcd7da9acdbcc1f58fb1b420b817a5eadba6e58f30a41aa14c5de8"},
+]
+
+[[package]]
+name = "types-aiobotocore-cloudformation"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore CloudFormation 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_cloudformation-2.24.1-py3-none-any.whl", hash = "sha256:d8905c7e4f3983aee3101f5d2cd88c94ea83ea0621135e9a4ebca9422a9273c8"},
+    {file = "types_aiobotocore_cloudformation-2.24.1.tar.gz", hash = "sha256:faf0a295e49693a7093b79cbe14960c993f33c129fa07051e1fd2155d2a43245"},
+]
+
+[[package]]
+name = "types-aiobotocore-dynamodb"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore DynamoDB 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_dynamodb-2.24.1-py3-none-any.whl", hash = "sha256:3538a72357983d7ee69ca353e3dcd2e5894783fb8256d4d743c9c3ad90837a9e"},
+    {file = "types_aiobotocore_dynamodb-2.24.1.tar.gz", hash = "sha256:b8d123bcd1e0bc5a59a820ec0b3738e2dd28aa0ba38e700423de6c70ce983672"},
+]
+
+[[package]]
+name = "types-aiobotocore-ec2"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore EC2 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_ec2-2.24.1-py3-none-any.whl", hash = "sha256:5af220f7b6cd08d514182bedd58072d17cf2a941ccb5395a0c2c193a34571ffc"},
+    {file = "types_aiobotocore_ec2-2.24.1.tar.gz", hash = "sha256:04b967d251ffb35af802224e2cd017dddf51f2a3e6e2fad2e91c3b3c911230de"},
+]
+
+[[package]]
+name = "types-aiobotocore-lambda"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore Lambda 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_lambda-2.24.1-py3-none-any.whl", hash = "sha256:789eec3b4c91d96147d82116264945867e0a202c24964528fce46f5a3fb49dbf"},
+    {file = "types_aiobotocore_lambda-2.24.1.tar.gz", hash = "sha256:5d8d08a17273dc120a149305b055b3d02e01514e43f89621a1b8fb632188fe1e"},
+]
+
+[[package]]
+name = "types-aiobotocore-rds"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore RDS 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_rds-2.24.1-py3-none-any.whl", hash = "sha256:7c91c647d1f27790f6a39374d70771c5526ac1e61e42a117bf17b6cf1823eb68"},
+    {file = "types_aiobotocore_rds-2.24.1.tar.gz", hash = "sha256:72820bc65c882c12a9f05dec20a07cf05bd474dcd6313f39d88cc86133fb6fa1"},
+]
+
+[[package]]
+name = "types-aiobotocore-s3"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore S3 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_s3-2.24.1-py3-none-any.whl", hash = "sha256:21d247aab8e0a691590638e189ab977b7fbdecd49fb9fcbeb4a1273dd9bce555"},
+    {file = "types_aiobotocore_s3-2.24.1.tar.gz", hash = "sha256:2ce187320bdf67dcf1fcdc68bb3d5de0a3a65f03de4ad4d872df567f62eccfe9"},
+]
+
+[[package]]
+name = "types-aiobotocore-sqs"
+version = "2.24.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore SQS 2.24.1 service generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_sqs-2.24.1-py3-none-any.whl", hash = "sha256:863a27bf9aa56b9ed7b2d6f27760d25f9aca8b3191a12732206e9b1e85455b70"},
+    {file = "types_aiobotocore_sqs-2.24.1.tar.gz", hash = "sha256:9456c003f0d7136e3db474b5fa01ebaa62a28610d2e4b5e4668ff8066e4e8803"},
+]
+
+[[package]]
+name = "types-aiobotocore"
+version = "2.24.1"
+extras = ["sqs"]
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore 2.24.1 generated with mypy-boto3-builder 8.11.0"
+groups = ["default"]
+dependencies = [
+    "types-aiobotocore-sqs<2.25.0,>=2.24.0",
+    "types-aiobotocore==2.24.1",
+]
+files = [
+    {file = "types_aiobotocore-2.24.1-py3-none-any.whl", hash = "sha256:3c766918cae7e7e908352930f4ecc4de00130a5b84ba16d305d2b9be942d304e"},
+    {file = "types_aiobotocore-2.24.1.tar.gz", hash = "sha256:82ad58aa05bcd7da9acdbcc1f58fb1b420b817a5eadba6e58f30a41aa14c5de8"},
+]
+
+[[package]]
+name = "types-awscrt"
+version = "0.27.6"
+requires_python = ">=3.8"
+summary = "Type annotations and code completion for awscrt"
+groups = ["default"]
+files = [
+    {file = "types_awscrt-0.27.6-py3-none-any.whl", hash = "sha256:18aced46da00a57f02eb97637a32e5894dc5aa3dc6a905ba3e5ed85b9f3c526b"},
+    {file = "types_awscrt-0.27.6.tar.gz", hash = "sha256:9d3f1865a93b8b2c32f137514ac88cb048b5bc438739945ba19d972698995bfb"},
+]
+
+[[package]]
+name = "types-s3transfer"
+version = "0.13.0"
+requires_python = ">=3.8"
+summary = "Type annotations and code completion for s3transfer"
+groups = ["default"]
+files = [
+    {file = "types_s3transfer-0.13.0-py3-none-any.whl", hash = "sha256:79c8375cbf48a64bff7654c02df1ec4b20d74f8c5672fc13e382f593ca5565b3"},
+    {file = "types_s3transfer-0.13.0.tar.gz", hash = "sha256:203dadcb9865c2f68fb44bc0440e1dc05b79197ba4a641c0976c26c9af75ef52"},
 ]
 
 [[package]]

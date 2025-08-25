@@ -1,28 +1,35 @@
 import os
-import asyncio
-from typing import Annotated, Final, List
+from typing import List, Optional
 import logging
-from aio_statsd import TelegrafStatsdClient
-from pydantic import (
-    field_validator,
-    PostgresDsn,
-    RedisDsn,
-)
-import base64
-from pydantic_settings import BaseSettings, NoDecode
-from aiohttp import web
-from cryptography.fernet import Fernet
-from aiohttp import ClientSession
-from redis import asyncio as redis
+from pydantic_settings import BaseSettings
 
 
 logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
+    """ Settings for the app. """
+
     graze_api_base_url: str = "https://api.graze.social"
-    stream_name: str = os.getenv("STREAM_NAME")
-    turbo_credential_secret: str = os.getenv("TURBO_CREDENTIAL_SECRET")
+    stream_name: Optional[str] = os.getenv("STREAM_NAME")
+    turbo_credential_secret: Optional[str] = os.getenv("TURBO_CREDENTIAL_SECRET")
+
+    s3_bucket: Optional[str] = os.getenv("S3_BUCKET")
+    s3_region: Optional[str] = os.getenv("S3_REGION")
+
+    input_mode: Optional[str] = (
+        "sqs" if os.getenv("INPUT_MODE", "").lower() == "sqs" else "websocket"
+    )
+
+    input_queue_url: Optional[str] = os.getenv("INPUT_QUEUE_URL")
+
+    output_to_s3: Optional[bool] = os.getenv("OUTPUT_TO_S3") == "true"
+    output_to_sqs: Optional[bool] = os.getenv("OUTPUT_TO_SQS") == "true"
+    output_to_redis: Optional[bool] = os.getenv("OUTPUT_TO_REDIS") == "true"
+
+    output_queue_url: Optional[str] = os.getenv("OUTPUT_QUEUE_URL")
+
+    redis_url: Optional[str] = os.getenv("REDIS_URL")
 
     jetstream_hosts: List[str] = [
         "jetstream1.us-east.bsky.network",
@@ -31,26 +38,3 @@ class Settings(BaseSettings):
         "jetstream2.us-west.bsky.network",
     ]
     db_dir: str = "jetstream-messages"
-    s3_bucket: str = "graze-turbo-01"
-    s3_region: str = "us-east-1"
-    debug: bool = False
-
-    http_port: int = 5100
-
-    external_hostname: str = "localhost:5100"
-
-    redis_dsn: RedisDsn = RedisDsn("redis://valkey:6379/1?decode_responses=True")
-    worker_id: str = "worker"
-
-    statsd_host: str = "telegraf"
-    statsd_port: int = 8125
-    statsd_prefix: str = "aip"
-
-
-SettingsAppKey: Final = web.AppKey("settings", Settings)
-SessionAppKey: Final = web.AppKey("http_session", ClientSession)
-RedisPoolAppKey: Final = web.AppKey("redis_pool", redis.ConnectionPool)
-RedisClientAppKey: Final = web.AppKey("redis_client", redis.Redis)
-TelegrafStatsdClientAppKey: Final = web.AppKey(
-    "telegraf_statsd_client", TelegrafStatsdClient
-)

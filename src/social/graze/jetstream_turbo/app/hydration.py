@@ -1,7 +1,6 @@
 import asyncio
 import random
-import time
-from typing import List, Dict, Any, Tuple, Set
+from typing import List, Dict, Any, Set
 import aiorwlock
 from collections import OrderedDict
 
@@ -250,5 +249,8 @@ class Hydration:
                 "message": rec,  # the entire raw record
                 "hydrated_metadata": hydrated_metadata,
             }
+            if overrides := rec.get("override_algorithms"):
+                enriched_obj["override_algorithms"] = overrides
+
             enriched_list.append(enriched_obj)
         return enriched_list
