@@ -1,8 +1,9 @@
 import asyncio
 import random
 from typing import List, Dict, Any, Set
-import aiorwlock
 from collections import OrderedDict
+
+import aiorwlock
 
 from social.graze.jetstream_turbo.app.bluesky_api import BlueskyAPI
 

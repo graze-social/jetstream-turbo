@@ -86,13 +86,13 @@ class TurboCharger:
         async with sqsi.QueueIterator(
             queue_url,
             buffer_size=10,
-            wait_time=10,
+            wait_time=1,
             deletion_mode="handle",
             transformer=json.loads,
             transformer_exceptions="skip-delete",
             transformer_exception_logger=logger.info,
         ) as queue:
-            async for chunk in queue.chunks(size=BATCH_SIZE, timeout=10): # type: ignore
+            async for chunk in queue.chunks(size=BATCH_SIZE, timeout=1): # type: ignore
                 await self._process_batch(message for message, _ in chunk)
                 await queue.mark_complete(*(handle for _, handle in chunk))
 
