@@ -1,0 +1,88 @@
+name: Build Jetstream Turbo PR
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - labeled
+      - synchronize
+
+jobs:
+  build_jetstream_turbo_pr:
+    name: build_jetstream_turbo
+    outputs:
+      version_tag: ${{steps.version_tag.outputs.VERSION_TAG}}
+    if: contains(github.event.pull_request.labels.*.name, 'auto-build')
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: version_tag
+        id: version_tag
+        run: |
+          short_sha=$(git rev-parse --short HEAD)
+          echo "_SHORT_SHA=$short_sha" >> $GITHUB_ENV
+          echo "VERSION_TAG=pr-${{github.event.pull_request.number}}-$short_sha-${{ github.run_number }}" >> $GITHUB_ENV
+          echo "VERSION_TAG=pr-${{github.event.pull_request.number}}-$short_sha-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: configure_aws_credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          role-external-id: grazebuilder
+          role-duration-seconds: 1200
+          role-session-name: jestream-turbo-builder
+          role-skip-session-tagging: true
+          aws-region: ${{ secrets.ECR_REGION }}
+
+      - name: Set up Docker CLI
+        uses: docker/setup-buildx-action@v3
+
+      - name: login_to_ecr
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: "true"
+
+      - name: build_and_push
+        uses: docker/build-push-action@v5
+        with:
+          file: Dockerfile
+          context: .
+          cache-from: type=registry,ref=${{secrets.ECR_REPO}}:cache
+          cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{secrets.ECR_REPO}}:cache
+          push: true
+          tags: |
+            ${{ secrets.ECR_REPO }}:${{ env.VERSION_TAG }}
+            ${{ secrets.ECR_REPO }}:latest
+          builder: ${{ steps.setup_buildx.name }}
+          platforms: linux/amd64
+
+      - name: post_to_eng_alerts
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_ENG_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: "*`Jetstream Turbo Image`* ${{ env.VERSION_TAG }} Created"
+            blocks:
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "*`Jetstream Turbo` Image Created*"
+              - type: "divider"
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "Download:\n```${{secrets.ECR_REPO}}:${{ env.VERSION_TAG }}```"
+
+      - name: comment_on_pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.DISPATCH_GH_TOKEN }}
+        run: |
+          gh pr comment ${{github.event.pull_request.number}} --body "#### :rocket: Image Build Success
+          - **Image:** <code>${{secrets.ECR_REPO}}:${{ env.VERSION_TAG }}</code>
+          - **Commit SHA:** <code>${{ env._SHORT_SHA}}</code>
