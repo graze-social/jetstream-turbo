@@ -78,11 +78,3 @@ jobs:
                 text:
                   type: "mrkdwn"
                   text: "Download:\n```${{secrets.ECR_REPO}}:${{ env.VERSION_TAG }}```"
-
-      - name: comment_on_pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.DISPATCH_GH_TOKEN }}
-        run: |
-          gh pr comment ${{github.event.pull_request.number}} --body "#### :rocket: Image Build Success
-          - **Image:** <code>${{secrets.ECR_REPO}}:${{ env.VERSION_TAG }}</code>
-          - **Commit SHA:** <code>${{ env._SHORT_SHA}}</code>
