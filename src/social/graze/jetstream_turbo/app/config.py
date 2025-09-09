@@ -23,9 +23,9 @@ class Settings(BaseSettings):
 
     input_queue_url: Optional[str] = os.getenv("INPUT_QUEUE_URL")
 
-    output_to_s3: Optional[bool] = os.getenv("OUTPUT_TO_S3") == "true"
-    output_to_sqs: Optional[bool] = os.getenv("OUTPUT_TO_SQS") == "true"
-    output_to_redis: Optional[bool] = os.getenv("OUTPUT_TO_REDIS") == "true"
+    output_to_s3: Optional[bool] = bool(os.getenv("OUTPUT_TO_S3"))
+    output_to_sqs: Optional[bool] = bool(os.getenv("OUTPUT_TO_SQS"))
+    output_to_redis: Optional[bool] = bool(os.getenv("OUTPUT_TO_REDIS"))
 
     output_queue_url: Optional[str] = os.getenv("OUTPUT_QUEUE_URL")
 
