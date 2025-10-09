@@ -36,9 +36,6 @@ class SQSEgress (EgressBase):
         """
 
         for chunk in chunks(enriched_records, 10):
-            for message in chunk:
-                logger.info("Message: %s", json.dumps(message))
-
             await self._sqs_client.send_message_batch(
                 QueueUrl=self.queue_url,
                 Entries=[
