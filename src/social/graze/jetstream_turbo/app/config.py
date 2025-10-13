@@ -38,3 +38,5 @@ class Settings(BaseSettings):
         "jetstream2.us-west.bsky.network",
     ]
     db_dir: str = "jetstream-messages"
+
+    metrics_port: int = int(os.getenv("METRICS_PORT", "8000"))

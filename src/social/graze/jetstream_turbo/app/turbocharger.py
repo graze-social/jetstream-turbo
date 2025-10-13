@@ -2,6 +2,7 @@ import random
 import asyncio
 import json
 import logging
+import time
 from typing import Any, Iterable, List, Optional
 
 import sqsi
@@ -15,6 +16,7 @@ from social.graze.jetstream_turbo.app.config import Settings
 from social.graze.jetstream_turbo.app.graze_api import GrazeAPI
 from social.graze.jetstream_turbo.app.bluesky_api import BlueskyAPI
 from social.graze.jetstream_turbo.app.utility import ConfigurationException
+from social.graze.jetstream_turbo.app.metrics import posts_processed, batch_processing_time
 
 logger = logging.getLogger(__name__)
 
@@ -110,12 +112,15 @@ class TurboCharger:
         """
         Hydrates a batch of records and emits the enriched data.
         """
+        start_time = time.time()
         try:
             # logger.info("Got %d records, enriching...", len(records))
             enriched = await Hydration.hydrate_bulk(records, self.bluesky_clients)
             # logger.info("Enriched %d records, storing...", len(records))
             await self.egress.store_records(enriched)
             logger.info("Stored %d records.", len(records))
+            posts_processed.inc(len(records))
+            batch_processing_time.observe(time.time() - start_time)
         finally:
             semaphore.release()
 

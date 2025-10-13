@@ -6,6 +6,8 @@ import logging
 import os
 
 from social.graze.jetstream_turbo.app.turbocharger import start_turbo_charger
+from social.graze.jetstream_turbo.app.config import Settings
+from social.graze.jetstream_turbo.app.metrics import start_metrics_server
 
 
 def configure_logging():
@@ -48,8 +50,12 @@ async def start():
     )
     args = parser.parse_args()
 
+    # Start Prometheus metrics server
+    settings = Settings()
+    start_metrics_server(settings.metrics_port)
+
     await start_turbo_charger(
-        None,
+        settings,
         modulo=args.modulo,
         shard=args.shard,
     )
