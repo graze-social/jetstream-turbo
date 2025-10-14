@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     output_to_redis: Optional[bool] = bool(os.getenv("OUTPUT_TO_REDIS"))
 
     output_queue_url: Optional[str] = os.getenv("OUTPUT_QUEUE_URL")
+    media_output_queue_url: Optional[str] = os.getenv("MEDIA_OUTPUT_QUEUE_URL")
 
     redis_url: Optional[str] = os.getenv("REDIS_URL")
 
