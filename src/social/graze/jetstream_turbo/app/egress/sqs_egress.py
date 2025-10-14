@@ -64,7 +64,4 @@ class SQSEgress (EgressBase):
 
     def _has_media(self, record: Dict[str, Any]):
         """ Determine if a record has images or videos in it. """
-        return (
-            bool(self._content_extractor.extract_images(record))
-            or bool(self._content_extractor.extract_videos(record))
-        )
+        return bool(self._content_extractor.extract_videos(record))
