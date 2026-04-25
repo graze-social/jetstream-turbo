@@ -1,16 +1,20 @@
 import asyncio
+import logging
 from typing import List, Dict, TypeVar, Callable, Awaitable
 
 from atproto import AsyncClient, models
 from atproto_client.exceptions import (
     BadRequestError,
     RequestException,
+    AtProtocolError,
 )
 
 T = TypeVar("T")
 K = TypeVar("K")
 V = TypeVar("V")
 CLIENT_BANDWIDTH = 10
+
+logger = logging.getLogger(__name__)
 
 
 class BlueskyAPI:
@@ -69,8 +73,12 @@ class BlueskyAPI:
         """Fetch profiles for many DIDs, in pages of 25."""
 
         async def fetch_profiles(sub: List[str]):
-            resp = await self._client.app.bsky.actor.get_profiles({"actors": sub})
-            return {p.did: p for p in resp.profiles}
+            try:
+                resp = await self._client.app.bsky.actor.get_profiles({"actors": sub})
+                return {p.did: p for p in resp.profiles}
+            except AtProtocolError as e:
+                logger.error("Exception fetching profiles: %s", e)
+                return {}
 
         return await self._chunked_map(dids, 25, fetch_profiles)
 
@@ -80,7 +88,11 @@ class BlueskyAPI:
         """Fetch posts for many URIs, in pages of 25."""
 
         async def fetch_posts(sub: List[str]):
-            resp = await self._client.app.bsky.feed.get_posts({"uris": sub})
-            return {p.uri: p for p in resp.posts}
+            try:
+                resp = await self._client.app.bsky.feed.get_posts({"uris": sub})
+                return {p.uri: p for p in resp.posts}
+            except AtProtocolError as e:
+                logger.error("Exception fetching posts: %s", e)
+                return {}
 
         return await self._chunked_map(uris, 25, fetch_posts)

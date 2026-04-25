@@ -37,11 +37,13 @@ class TurboCharger:
         *,
         modulo: Optional[int] = None,
         shard: Optional[int] = None,
+        excluded_dids: frozenset[str] = frozenset(),
     ):
         self.session_strings = session_strings
         self.endpoint = endpoint
         self.modulo = modulo
         self.shard = shard
+        self.excluded_dids = excluded_dids
 
         self.client = JetstreamClient(endpoint)
         self.buffer = []
@@ -64,10 +66,14 @@ class TurboCharger:
         hydrates them in parallel, and yields the enriched records.
         """
         async for record in self.client.run_stream():
-            if (not self.modulo and not self.shard) or (
+            shard_ok = (not self.modulo and not self.shard) or (
                 record.get("time_us") % self.modulo == self.shard
-            ):
-                self.buffer.append(record)
+            )
+            if not shard_ok:
+                continue
+            if self.excluded_dids and record.get("did") in self.excluded_dids:
+                continue
+            self.buffer.append(record)
             if len(self.buffer) >= BATCH_SIZE:
                 batch = self.buffer[:BATCH_SIZE]
                 self.buffer = self.buffer[BATCH_SIZE:]
@@ -104,7 +110,10 @@ class TurboCharger:
         """
 
         await self.semaphore.acquire()
-        asyncio.create_task(self._hydrate_and_release(list(batch), self.semaphore))
+        try:
+            await asyncio.create_task(self._hydrate_and_release(list(batch), self.semaphore))
+        except Exception as ex:
+            logger.error("Exception in hydration: %s", ex, exc_info=True)
 
     async def _hydrate_and_release(
         self, records: List[dict], semaphore: asyncio.Semaphore
@@ -114,12 +123,13 @@ class TurboCharger:
         """
         start_time = time.time()
         try:
-            # logger.info("Got %d records, enriching...", len(records))
-            enriched = await Hydration.hydrate_bulk(records, self.bluesky_clients)
-            # logger.info("Enriched %d records, storing...", len(records))
-            await self.egress.store_records(enriched)
-            logger.info("Stored %d records.", len(records))
+            enriched = await Hydration.hydrate_bulk(
+                records, self.bluesky_clients, excluded_dids=self.excluded_dids
+            )
             posts_processed.inc(len(records))
+#            logger.debug(f"Enriched {len(records)} records, storing...")
+            await self.egress.store_records(enriched)
+#            logger.debug(f"Stored {len(records)} records.")
             batch_processing_time.observe(time.time() - start_time)
         finally:
             semaphore.release()
@@ -140,12 +150,16 @@ async def start_turbo_charger(
     async with MultipleEgress(*get_egress_methods(settings)) as egress:
         session_strings = await GrazeAPI.fetch_session_strings(settings)
 
+        if excl := settings.excluded_dids:
+            logger.info("EXCLUSION_LIST is active with %d entries", len(excl))
+
         turbo_charger = TurboCharger(
             egress=egress,
             session_strings=session_strings,
             endpoint=random.choice(settings.jetstream_hosts),
             modulo=modulo,
             shard=shard,
+            excluded_dids=excl,
         )
 
         await turbo_charger.load_clients()

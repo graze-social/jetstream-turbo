@@ -32,6 +32,7 @@ dependencies = [
     "types-aioboto3[essential]>=15.1.0",
     "aiobotocore>=2.24.0",
     "prometheus-client>=0.21.0",
+    "aio-statsd>=0.2.9",
 ]
 readme = "README.md"
 

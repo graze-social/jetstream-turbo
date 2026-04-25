@@ -1,7 +1,16 @@
 import os
-from typing import List, Optional
+from typing import Final, List, Optional
 import logging
+from aio_statsd import TelegrafStatsdClient
 from pydantic_settings import BaseSettings
+from pydantic import (
+    AliasChoices,
+    Field,
+    RedisDsn,
+    computed_field,
+)
+from aiohttp import web, ClientSession
+from redis import asyncio as redis
 
 
 logger = logging.getLogger(__name__)
@@ -40,3 +49,36 @@ class Settings(BaseSettings):
     db_dir: str = "jetstream-messages"
 
     metrics_port: int = int(os.getenv("METRICS_PORT", "8000"))
+    http_port: int = 5100
+
+    external_hostname: str = "localhost:5100"
+
+    redis_dsn: RedisDsn = RedisDsn("redis://valkey:6379/1?decode_responses=True")
+    worker_id: str = "worker"
+
+    statsd_host: str = "telegraf"
+    statsd_port: int = 8125
+    statsd_prefix: str = "aip"
+
+    # Comma-separated Bluesky DIDs: no ingestion/enrichment for these accounts.
+    exclusion_list: str = Field(
+        default="",
+        validation_alias=AliasChoices("EXCLUSION_LIST", "exclusion_list"),
+    )
+
+    @computed_field
+    @property
+    def excluded_dids(self) -> frozenset[str]:
+        if not self.exclusion_list or not str(self.exclusion_list).strip():
+            return frozenset()
+        parts = (p.strip() for p in str(self.exclusion_list).split(","))
+        return frozenset(p for p in parts if p)
+
+
+SettingsAppKey: Final = web.AppKey("settings", Settings)
+SessionAppKey: Final = web.AppKey("http_session", ClientSession)
+RedisPoolAppKey: Final = web.AppKey("redis_pool", redis.ConnectionPool)
+RedisClientAppKey: Final = web.AppKey("redis_client", redis.Redis)
+TelegrafStatsdClientAppKey: Final = web.AppKey(
+    "telegraf_statsd_client", TelegrafStatsdClient
+)
