@@ -27,7 +27,6 @@ RUN pdm install \
     --fail-fast \
     --lockfile ${LOCKFILE}
 
-
 # Copy the rest of the project files (excluding `.venv`)
 COPY src ./src/
 

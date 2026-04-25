@@ -1,23 +1,25 @@
 import asyncio
-import sqlite3
 import json
-from pathlib import Path
 import os
-import zipfile
+import sqlite3
 import logging
+import zipfile
 from datetime import datetime, timedelta, UTC
-from typing import Any, List, Dict, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import aioboto3
-import redis.asyncio as redis
 from types_aiobotocore_s3 import S3Client
+
+from social.graze.jetstream_turbo.app.egress.base import EgressBase
 
 logger = logging.getLogger(__name__)
 
 
-class Egress:
+class S3Egress (EgressBase):
     """
-    Handles persisting records to SQLite + S3, and pushes to Redis Stream with trimming.
+    Handles egress to S3 by persisting records to a SQLite database and pushing them every so
+    often.
     """
 
     def __init__(
@@ -25,7 +27,7 @@ class Egress:
         db_dir: str = "data_store",
         s3_bucket: str = "graze-turbo-01",
         s3_region: Optional[str] = "us-east-1",
-        stream_name: Optional[str] = "hydrated_jetstream",
+        stream_name: str = "hydrated_jetstream",
         trim_maxlen: Optional[int] = 100,
     ):
         self.db_dir = db_dir
@@ -42,7 +44,6 @@ class Egress:
 
         self.session: aioboto3.Session = None # type: ignore
         self.s3_client: S3Client = None # type: ignore
-        self.redis_client: Optional[redis.Redis] = None
         self.rotation_minutes = 1
 
         self._writer_lock = asyncio.Lock()
@@ -53,23 +54,12 @@ class Egress:
         self.s3_client = await self.session.client("s3", region_name=self.s3_region).__aenter__()
         await self.s3_client.head_bucket(Bucket=self.s3_bucket)
 
-        # Initialize Redis
-        if not (url := os.getenv("REDIS_URL")):
-            raise RuntimeError("REDIS_URL not set")
-        self.redis_client = redis.from_url(url)
-        await self.redis_client.ping()
-        logger.info("Connected to Redis at %s", url)
-
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
         if self.s3_client:
             await self.s3_client.__aexit__(exc_type, exc, tb)
             self.s3_client = None # type: ignore
-
-        if self.redis_client:
-            await self.redis_client.aclose()
-            self.redis_client = None
 
     async def _create_new_db(self, rotate_old_db_path: Optional[str] = None):
         if rotate_old_db_path:
@@ -120,7 +110,7 @@ class Egress:
                 logger.info("Deleted local files %s and %s", old_db_path, zip_path)
             except OSError as rm_err:
                 logger.warning("Failed to delete old DB or zip: %s", rm_err)
-        except Exception as e: # pylint: disable=broad-exception-caught
+        except Exception as e:
             logger.error("Failed to zip/upload %s: %s", old_db_path, e)
 
     def _parse_time_us(self, time_us: Any) -> Optional[int]:
@@ -130,22 +120,6 @@ class Egress:
             return int(time_us)
         except (ValueError, TypeError):
             return None
-
-    async def push_batch_to_stream(self, batch: List[Dict[str, Any]]):
-        """
-        Push a batch of posts to a Redis stream.
-        """
-
-        if not batch or not self.redis_client or not self.stream_name:
-            return
-
-        pipe = self.redis_client.pipeline()
-        for item in batch:
-            pipe.xadd(self.stream_name, {"data": json.dumps(item)})
-        if self.trim_maxlen is not None:
-            # single trim for the entire batch
-            pipe.xtrim(self.stream_name, maxlen=self.trim_maxlen, approximate=True)
-        await pipe.execute()
 
     async def store_records(self, enriched_records: List[Dict[str, Any]]):
         """
@@ -188,14 +162,3 @@ class Egress:
             )
             self.conn.commit()
             cur.close()
-
-        # Trimmed stream push
-        await self.push_batch_to_stream(enriched_records)
-
-    async def close(self):
-        """ Close the SQLite connection if it is still open. """
-
-        async with self._writer_lock:
-            if self.conn:
-                self.conn.close()
-                self.conn = None

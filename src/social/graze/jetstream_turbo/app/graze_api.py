@@ -10,6 +10,10 @@ class GrazeAPI:
 
     @staticmethod
     async def fetch_session_strings(settings: Settings) -> List[str]:
+        """
+        Fetch the Bluesky account session strings that we are going to use to do turbo enrichment.
+        """
+
         url = f"{settings.graze_api_base_url.rstrip('/')}/app/api/v1/turbo-tokens/credentials?credential_secret={settings.turbo_credential_secret}"
         async with httpx.AsyncClient() as client:
             response = await client.get(url, timeout=10.0)
