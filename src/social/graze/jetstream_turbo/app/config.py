@@ -1,12 +1,14 @@
 import os
 import asyncio
-from typing import Annotated, Final, List
+from typing import Final, List
 import logging
 from aio_statsd import TelegrafStatsdClient
 from pydantic import (
-    field_validator,
+    AliasChoices,
+    Field,
     PostgresDsn,
     RedisDsn,
+    computed_field,
 )
 import base64
 from pydantic_settings import BaseSettings, NoDecode
@@ -45,6 +47,20 @@ class Settings(BaseSettings):
     statsd_host: str = "telegraf"
     statsd_port: int = 8125
     statsd_prefix: str = "aip"
+
+    # Comma-separated Bluesky DIDs: no ingestion/enrichment for these accounts.
+    exclusion_list: str = Field(
+        default="",
+        validation_alias=AliasChoices("EXCLUSION_LIST", "exclusion_list"),
+    )
+
+    @computed_field
+    @property
+    def excluded_dids(self) -> frozenset[str]:
+        if not self.exclusion_list or not str(self.exclusion_list).strip():
+            return frozenset()
+        parts = (p.strip() for p in str(self.exclusion_list).split(","))
+        return frozenset(p for p in parts if p)
 
 
 SettingsAppKey: Final = web.AppKey("settings", Settings)

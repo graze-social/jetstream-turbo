@@ -30,11 +30,13 @@ class TurboCharger:
         *,
         modulo: int = None,
         shard: int = None,
+        excluded_dids: frozenset[str] = frozenset(),
     ):
         self.session_strings = session_strings
         self.endpoint = endpoint
         self.modulo = modulo
         self.shard = shard
+        self.excluded_dids = excluded_dids
 
         self.client = JetstreamClient(endpoint)
         self.buffer = []
@@ -51,10 +53,14 @@ class TurboCharger:
         hydrates them in parallel, and yields the enriched records.
         """
         async for record in self.client.run_stream():
-            if (not self.modulo and not self.shard) or (
+            shard_ok = (not self.modulo and not self.shard) or (
                 record.get("time_us") % self.modulo == self.shard
-            ):
-                self.buffer.append(record)
+            )
+            if not shard_ok:
+                continue
+            if self.excluded_dids and record.get("did") in self.excluded_dids:
+                continue
+            self.buffer.append(record)
             if len(self.buffer) >= BATCH_SIZE:
                 await self._process_batch()
 
@@ -80,7 +86,9 @@ class TurboCharger:
         """
         try:
             logger.debug(f"Got {len(records)} records, enriching...")
-            enriched = await Hydration.hydrate_bulk(records, self.bluesky_clients)
+            enriched = await Hydration.hydrate_bulk(
+                records, self.bluesky_clients, excluded_dids=self.excluded_dids
+            )
             logger.debug(f"Enriched {len(records)} records, storing...")
             await self.storage.store_records(enriched)
             logger.debug(f"Stored {len(records)} records.")
@@ -100,6 +108,10 @@ async def start_turbo_charger(
     if settings is None:
         settings = Settings()  # type: ignore
 
+    excl = settings.excluded_dids
+    if excl:
+        logger.info("EXCLUSION_LIST is active with %d entries", len(excl))
+
     storage_instance = Egress(
         db_dir=settings.db_dir,
         s3_bucket=settings.s3_bucket,
@@ -115,6 +127,7 @@ async def start_turbo_charger(
         endpoint=random.choice(settings.jetstream_hosts),
         modulo=modulo,
         shard=shard,
+        excluded_dids=excl,
     )
 
     await turbo_charger.load_clients()

@@ -1,11 +1,42 @@
 import asyncio
 import random
-import time
-from typing import List, Dict, Any, Tuple, Set
+from typing import List, Dict, Any, Set, Optional
 import aiorwlock
 from collections import OrderedDict
 
 from social.graze.jetstream_turbo.app.bluesky_api import BlueskyAPI
+
+
+def repo_did_from_at_uri(uri: str) -> Optional[str]:
+    """Return the repository DID for an at:// URI, or None if not parseable."""
+    if not uri or not isinstance(uri, str) or not uri.startswith("at://"):
+        return None
+    rest = uri[5:]
+    if not rest:
+        return None
+    return rest.split("/", 1)[0]
+
+
+def _author_did_from_post_dict(post: dict) -> Optional[str]:
+    if not post or not isinstance(post, dict):
+        return None
+    author = post.get("author")
+    if isinstance(author, dict):
+        d = author.get("did")
+        if isinstance(d, str):
+            return d
+    return None
+
+
+def _post_if_not_excluded(
+    post: Optional[dict], excluded_dids: frozenset[str]
+) -> Optional[dict]:
+    if not post or not excluded_dids:
+        return post
+    aid = _author_did_from_post_dict(post)
+    if aid and aid in excluded_dids:
+        return None
+    return post
 
 
 class LRUCache:
@@ -80,7 +111,10 @@ class Hydration:
 
     @staticmethod
     async def hydrate_bulk(
-        records: List[dict], api_clients: List[BlueskyAPI]
+        records: List[dict],
+        api_clients: List[BlueskyAPI],
+        *,
+        excluded_dids: frozenset[str] = frozenset(),
     ) -> List[dict]:
         """
         Process up to 100 raw Jetstream records:
@@ -99,7 +133,7 @@ class Hydration:
             rec_dids = set()
 
             did = rec.get("did")
-            if did:
+            if did and (not excluded_dids or did not in excluded_dids):
                 all_dids.add(did)
 
             commit = rec.get("commit", {})
@@ -110,8 +144,15 @@ class Hydration:
             if embed.get("$type") == "app.bsky.embed.record":
                 quote_uri = embed.get("record", {}).get("uri")
                 if quote_uri:
-                    all_uris.add(quote_uri)
-                    record_embed_map[idx] = quote_uri
+                    qdid = repo_did_from_at_uri(quote_uri)
+                    skip = (
+                        excluded_dids
+                        and qdid is not None
+                        and qdid in excluded_dids
+                    )
+                    if not skip:
+                        all_uris.add(quote_uri)
+                        record_embed_map[idx] = quote_uri
 
             # Collect mention DID(s) from facets
             facets = c_record.get("facets", [])
@@ -120,17 +161,33 @@ class Hydration:
                 for feature in features:
                     if feature.get("$type") == "app.bsky.richtext.facet#mention":
                         mention_did = feature.get("did")
-                        if mention_did:
+                        if mention_did and (
+                            not excluded_dids or mention_did not in excluded_dids
+                        ):
                             rec_dids.add(mention_did)
                             mention_dids_global.add(mention_did)
 
             reply = c_record.get("reply", {})
             parent_uri = reply.get("parent", {}).get("uri")
             if parent_uri:
-                all_uris.add(parent_uri)
+                p_did = repo_did_from_at_uri(parent_uri)
+                skip = (
+                    excluded_dids
+                    and p_did is not None
+                    and p_did in excluded_dids
+                )
+                if not skip:
+                    all_uris.add(parent_uri)
             root_uri = reply.get("root", {}).get("uri")
             if root_uri:
-                all_uris.add(root_uri)
+                r_did = repo_did_from_at_uri(root_uri)
+                skip = (
+                    excluded_dids
+                    and r_did is not None
+                    and r_did in excluded_dids
+                )
+                if not skip:
+                    all_uris.add(root_uri)
 
             record_mentions_map[idx] = rec_dids
 
@@ -208,6 +265,9 @@ class Hydration:
 
             # Construct an at_uri if possible from commit data
             did = rec.get("did", "")
+            if excluded_dids and did in excluded_dids:
+                continue
+
             collection = commit.get("collection", "")
             rkey = commit.get("rkey", "")
             if did and collection and rkey:
@@ -223,17 +283,23 @@ class Hydration:
             # Mentions: a dict of { mention_did -> user_profile }
             mention_dict = {}
             for mention_did in record_mentions_map[idx]:
+                if excluded_dids and mention_did in excluded_dids:
+                    continue
                 mention_dict[mention_did] = did_to_profile.get(mention_did)
 
             # Parent & root post data
             reply = c_record.get("reply", {})
             parent_uri = reply.get("parent", {}).get("uri")
             parent_post = uri_to_post.get(parent_uri) if parent_uri else None
+            parent_post = _post_if_not_excluded(parent_post, excluded_dids)
 
             root_uri = reply.get("root", {}).get("uri")
             root_post = uri_to_post.get(root_uri) if root_uri else None
+            root_post = _post_if_not_excluded(root_post, excluded_dids)
+
             quote_uri = record_embed_map.get(idx)
             quote_post = uri_to_post.get(quote_uri) if quote_uri else None
+            quote_post = _post_if_not_excluded(quote_post, excluded_dids)
 
             hydrated_metadata = {
                 "user": user_profile,
