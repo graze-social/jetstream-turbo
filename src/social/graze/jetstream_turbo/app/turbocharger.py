@@ -195,6 +195,7 @@ def get_egress_methods(settings: Settings):
 
         yield SQSEgress(
             queue_url=settings.output_queue_url,
+            media_queue_url=settings.media_output_queue_url,
         )
 
     if settings.output_to_redis:
