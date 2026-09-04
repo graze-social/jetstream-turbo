@@ -276,7 +276,17 @@ class Hydration:
             else:
                 at_uri = ""
 
-            time_us = c_record.get("time_us", None)
+            # `time_us` is jetstream's own receipt time and it lives on the RECORD
+            # ENVELOPE, next to `did` and `commit` -- never inside `commit.record`, which
+            # holds only what the posting client wrote. Reading it from `c_record` meant
+            # this was `None` on every record ever enriched: it is why the archives'
+            # `time_us` column is uniformly NULL, and why the envelope copy could not be
+            # used as the post's arrival time even though the value was right there.
+            #
+            # Consumers read `message.time_us` first for exactly this reason, so they work
+            # on the backlog as well as on records enriched after this fix. Do not remove
+            # that fallback on the strength of this line.
+            time_us = rec.get("time_us", None)
 
             # The user is the 'did' who posted
             user_profile = did_to_profile.get(did, None)
