@@ -2,19 +2,21 @@
 Prometheus metrics for jetstream-turbo.
 """
 import logging
-from prometheus_client import Counter, Histogram, start_http_server
+from prometheus_client import Counter, Histogram, disable_created_metrics, start_http_server
+
+disable_created_metrics()
 
 logger = logging.getLogger(__name__)
 
 # Metrics
 posts_processed = Counter(
-    'jetstream_turbo_posts_processed_total',
+    'jetstream_turbo:posts_processed',
     'Total number of posts processed by the turbocharger'
 )
 
 batch_processing_time = Histogram(
-    'jetstream_turbo_batch_processing_seconds',
-    'Time taken to process a batch of posts',
+    'jetstream_turbo:batch_time',
+    'Time (seconds) taken to process a batch of posts',
     buckets=(0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, float('inf'))
 )
 
