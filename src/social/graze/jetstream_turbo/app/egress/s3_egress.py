@@ -22,6 +22,8 @@ class S3Egress (EgressBase):
     often.
     """
 
+    name = "s3"
+
     def __init__(
         self,
         db_dir: str = "data_store",

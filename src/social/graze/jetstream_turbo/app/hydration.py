@@ -1,6 +1,6 @@
 import asyncio
 import random
-from typing import List, Dict, Any, Set, Optional
+from typing import List, Dict, Any, Set, Optional, Tuple
 from collections import OrderedDict
 
 import aiorwlock
@@ -38,6 +38,16 @@ def _post_if_not_excluded(
     if aid and aid in excluded_dids:
         return None
     return post
+
+
+# `hydrated_metadata` for a record nothing could be resolved for.
+UNHYDRATED_METADATA: Dict[str, Any] = {
+    "user": None,
+    "mentions": {},
+    "parent_post": None,
+    "reply_post": None,
+    "quote_post": None,
+}
 
 
 class LRUCache:
@@ -123,6 +133,123 @@ class Hydration:
           2) Bulk fetch user profiles and post data from Bluesky (skipping any in cache).
           3) Build a final enriched object for each record.
         """
+        record_mentions_map, record_embed_map, all_dids, all_uris = (
+            Hydration._collect_references(records, excluded_dids)
+        )
+
+        # Filter out the DIDs & URIs that are already cached
+        # We'll do a read-lock while we check the caches.
+
+        async with Hydration._cache_lock.reader_lock:
+            missing_dids = [d for d in all_dids if Hydration._user_cache.get(d) is None]
+            missing_uris = [u for u in all_uris if Hydration._post_cache.get(u) is None]
+
+        # 2) Get a single BlueskyAPI object
+        api = random.choice(api_clients)
+
+        # 3) Bulk fetch only missing user data and post data in parallel
+        #    Then populate the cache in a single (writer) lock.
+        async def fetch_missing_users():
+            if not missing_dids:
+                return {}
+            # We'll get a list of [ (did, profile) ... ] or something similar
+            profiles = await api.get_user_data_for_dids(missing_dids)
+            return profiles
+
+        async def fetch_missing_posts():
+            if not missing_uris:
+                return {}
+            # This returns List[(uri, data)]
+            posts = await api.hydrate_records_for_uris(missing_uris)
+            return posts
+
+        fetched_users, fetched_posts = await asyncio.gather(
+            fetch_missing_users(), fetch_missing_posts()
+        )
+
+        # 4) Put fetched items into the cache
+        async with Hydration._cache_lock.writer_lock:
+            # Add user profiles to cache
+            for did, profile in fetched_users.items():
+                # 'profile' might be an object with `.did`
+                if hasattr(profile, "did"):
+                    Hydration._user_cache.set(profile.did, profile.model_dump())
+            # Add post data to cache
+            for uri, post_data in fetched_posts.items():
+                Hydration._post_cache.set(
+                    uri,
+                    post_data.model_dump()
+                    if hasattr(post_data, "model_dump")
+                    else post_data,
+                )
+
+            # Now read from cache with updated contents
+            did_to_profile = {}
+            for d in all_dids:
+                val = Hydration._user_cache.get(d)
+                if val is not None:
+                    # Move it to the end (most recently used)
+                    Hydration._user_cache.set(d, val)
+                did_to_profile[d] = val
+
+            uri_to_post = {}
+            for u in all_uris:
+                val = Hydration._post_cache.get(u)
+                if val is not None:
+                    Hydration._post_cache.set(u, val)
+                uri_to_post[u] = val
+
+        # 5) Final pass: build a new list of records with the desired shape
+        return Hydration._assemble(
+            records,
+            record_mentions_map,
+            record_embed_map,
+            did_to_profile,
+            uri_to_post,
+            excluded_dids,
+        )
+
+    @staticmethod
+    def unhydrated_bulk(
+        records: List[dict],
+        *,
+        excluded_dids: frozenset[str] = frozenset(),
+    ) -> List[dict]:
+        """
+        Build the enriched envelope for `records` without looking anything up: exactly the
+        shape `hydrate_bulk` produces when every profile and post lookup comes back empty.
+        This is the fallback when hydration keeps failing, because a post with no hydrated
+        metadata is still matchable on its text and author, and a dropped post is not.
+        """
+        enriched_list = []
+        for rec in records:
+            try:
+                mentions, embeds, _, _ = Hydration._collect_references([rec], excluded_dids)
+                enriched_list.extend(
+                    Hydration._assemble([rec], mentions, embeds, {}, {}, excluded_dids)
+                )
+            except Exception:  # pylint: disable=broad-exception-caught
+                # A record too malformed even to assemble still goes out, as a bare envelope.
+                did = rec.get("did", "") if isinstance(rec, dict) else ""
+                if excluded_dids and did in excluded_dids:
+                    continue
+                enriched_list.append({
+                    "at_uri": "",
+                    "did": did,
+                    "time_us": rec.get("time_us") if isinstance(rec, dict) else None,
+                    "message": rec,
+                    "hydrated_metadata": dict(UNHYDRATED_METADATA),
+                })
+        return enriched_list
+
+    @staticmethod
+    def _collect_references(
+        records: List[dict], excluded_dids: frozenset[str]
+    ) -> Tuple[Dict[int, Set[str]], Dict[int, str], Set[str], Set[str]]:
+        """
+        Collect every DID and URI `records` reference: per-record mentions and quote embeds,
+        and the global sets of DIDs (posters + mentions) and URIs (parents, roots, quotes).
+        """
         # 1) Collect all unique DIDs & URIs we need to hydrate
         record_mentions_map: Dict[int, Set[str]] = {}
         record_embed_map: Dict[int, str] = {}
@@ -195,69 +322,18 @@ class Hydration:
         # Combine posting user DIDs + mention DIDs
         all_dids.update(mention_dids_global)
 
-        # Filter out the DIDs & URIs that are already cached
-        # We'll do a read-lock while we check the caches.
+        return record_mentions_map, record_embed_map, all_dids, all_uris
 
-        async with Hydration._cache_lock.reader_lock:
-            missing_dids = [d for d in all_dids if Hydration._user_cache.get(d) is None]
-            missing_uris = [u for u in all_uris if Hydration._post_cache.get(u) is None]
-
-        # 2) Get a single BlueskyAPI object
-        api = random.choice(api_clients)
-
-        # 3) Bulk fetch only missing user data and post data in parallel
-        #    Then populate the cache in a single (writer) lock.
-        async def fetch_missing_users():
-            if not missing_dids:
-                return {}
-            # We'll get a list of [ (did, profile) ... ] or something similar
-            profiles = await api.get_user_data_for_dids(missing_dids)
-            return profiles
-
-        async def fetch_missing_posts():
-            if not missing_uris:
-                return {}
-            # This returns List[(uri, data)]
-            posts = await api.hydrate_records_for_uris(missing_uris)
-            return posts
-
-        fetched_users, fetched_posts = await asyncio.gather(
-            fetch_missing_users(), fetch_missing_posts()
-        )
-
-        # 4) Put fetched items into the cache
-        async with Hydration._cache_lock.writer_lock:
-            # Add user profiles to cache
-            for did, profile in fetched_users.items():
-                # 'profile' might be an object with `.did`
-                if hasattr(profile, "did"):
-                    Hydration._user_cache.set(profile.did, profile.model_dump())
-            # Add post data to cache
-            for uri, post_data in fetched_posts.items():
-                Hydration._post_cache.set(
-                    uri,
-                    post_data.model_dump()
-                    if hasattr(post_data, "model_dump")
-                    else post_data,
-                )
-
-            # Now read from cache with updated contents
-            did_to_profile = {}
-            for d in all_dids:
-                val = Hydration._user_cache.get(d)
-                if val is not None:
-                    # Move it to the end (most recently used)
-                    Hydration._user_cache.set(d, val)
-                did_to_profile[d] = val
-
-            uri_to_post = {}
-            for u in all_uris:
-                val = Hydration._post_cache.get(u)
-                if val is not None:
-                    Hydration._post_cache.set(u, val)
-                uri_to_post[u] = val
-
-        # 5) Final pass: build a new list of records with the desired shape
+    @staticmethod
+    def _assemble(
+        records: List[dict],
+        record_mentions_map: Dict[int, Set[str]],
+        record_embed_map: Dict[int, str],
+        did_to_profile: Dict[str, Any],
+        uri_to_post: Dict[str, Any],
+        excluded_dids: frozenset[str],
+    ) -> List[dict]:
+        """ Build the enriched envelope for each record from resolved profiles and posts. """
         enriched_list = []
 
         for idx, rec in enumerate(records):

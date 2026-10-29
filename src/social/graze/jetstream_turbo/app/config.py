@@ -48,6 +48,32 @@ class Settings(BaseSettings):
     ]
     db_dir: str = "jetstream-messages"
 
+    # Everything below is overridable by the upper-cased env var of the same name.
+
+    # Jetstream reconnects: backoff ceiling, and how long an open but silent connection is
+    # trusted before it is treated as dead. The firehose is never quiet for a minute.
+    reconnect_max_backoff_seconds: float = 30.0
+    jetstream_idle_timeout_seconds: float = 60.0
+
+    # Persisted cursor. Disabled unless CURSOR_REDIS_URL is set. A cursor older than
+    # `cursor_max_age_seconds` is ignored rather than replayed: jetstream retains ~36h, and
+    # replaying a day by accident is its own outage. `cursor_resume_margin_seconds` is re-read
+    # on every resume, so the clock skew between jetstream hosts cannot open a gap.
+    cursor_redis_url: Optional[str] = None
+    cursor_key: str = "jetstream_turbo:cursor"
+    cursor_max_age_seconds: float = 1800.0
+    cursor_flush_interval_seconds: float = 1.0
+    cursor_resume_margin_seconds: float = 2.0
+
+    # Hydration: batches hydrated at once, and attempts before a batch is egressed unhydrated.
+    hydration_concurrency: int = 16
+    hydration_attempts: int = 3
+
+    # Egress: attempts per method before a batch counts as failed, and the SQS batch payload
+    # ceiling (the SendMessageBatch limit is the sum of every body in the request).
+    egress_attempts: int = 4
+    sqs_max_batch_bytes: int = 262_144
+
     metrics_port: int = int(os.getenv("METRICS_PORT", "8000"))
     http_port: int = 5100
 
