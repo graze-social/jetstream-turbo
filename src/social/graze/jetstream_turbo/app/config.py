@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     output_queue_url: Optional[str] = os.getenv("OUTPUT_QUEUE_URL")
 
     redis_url: Optional[str] = os.getenv("REDIS_URL")
+    # Approximate MAXLEN for the Redis output stream. Its reader (feed-processor's
+    # turbostream websocket) resumes from its own last id, so this is how far it can fall
+    # behind during a burst before entries are trimmed out from under it. The old image
+    # trimmed to 100 -- about two seconds of firehose -- and lost whole runs of posts at
+    # every :00/:30 burst. ~20k is several minutes; 0 disables trimming (unbounded).
+    redis_trim_maxlen: int = 20000
 
     jetstream_hosts: List[str] = [
         "jetstream1.us-east.bsky.network",

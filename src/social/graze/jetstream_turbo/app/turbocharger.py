@@ -336,4 +336,5 @@ def get_egress_methods(settings: Settings):
         yield RedisEgress(
             redis_url=settings.redis_url,
             stream_name=settings.stream_name,
+            trim_maxlen=settings.redis_trim_maxlen or None,
         )

@@ -26,7 +26,7 @@ dependencies = [
     "redis>=5.2.1",
     "httpx>=0.28.1",
     "websockets>=13.0",
-    "atproto>=0.0.59",
+    "atproto==0.0.69",
     "aiorwlock>=1.5.0",
     "sqsi>=0.1.9",
     "types-aioboto3[essential]>=15.1.0",
