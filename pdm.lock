@@ -4,8 +4,8 @@
 [metadata]
 groups = ["default"]
 strategy = ["inherit_metadata"]
-lock_version = "4.5.0"
-content_hash = "sha256:1a61c212d1e134b5d906863e2680421e2fcef47d64c7c53d775ed7e8c3bd5cab"
+lock_version = "4.5.1"
+content_hash = "sha256:514ee40e7d26b3daeecf2e0a2bf4767ae43c6c856c3af7c9c60304bd07706e50"
 
 [[metadata.targets]]
 requires_python = ">=3.11,<=3.12"
@@ -232,7 +232,7 @@ files = [
 
 [[package]]
 name = "atproto"
-version = "0.0.65"
+version = "0.0.69"
 requires_python = "<3.15,>=3.9"
 summary = "The AT Protocol SDK"
 groups = ["default"]
@@ -247,8 +247,8 @@ dependencies = [
     "websockets<16,>=15",
 ]
 files = [
-    {file = "atproto-0.0.65-py3-none-any.whl", hash = "sha256:ea53dea57454c9e56318b5d25ceb35854d60ba238b38b0e5ca79aa1a2df85846"},
-    {file = "atproto-0.0.65.tar.gz", hash = "sha256:027c6ed98746a9e6f1bb24bc18db84b80b386037709ff3af9ef927dce3dd4938"},
+    {file = "atproto-0.0.69-py3-none-any.whl", hash = "sha256:fe902039142d26ca6543c9381713479cd7c13ff6b20dd0622b9cdfbf62f1e61d"},
+    {file = "atproto-0.0.69.tar.gz", hash = "sha256:3b42d495f95a5e8dbfc6abec4308552b07d8f73da96536fff1c7b2fcc5befe0d"},
 ]
 
 [[package]]
