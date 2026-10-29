@@ -11,6 +11,8 @@ class RedisEgress (EgressBase):
     Output turbostream-enriched results to a Redis stream.
     """
 
+    name = "redis"
+
     def __init__(self, redis_url: str, stream_name: str, trim_maxlen: Optional[int] = None):
         self.redis_url = redis_url
         self.stream_name = stream_name
